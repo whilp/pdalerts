@@ -64,11 +64,14 @@ var format = d3.format(".1f"),
 
 d3.csv("data.csv", function (data) {
   var span,
+      timezone,
       extent = [];
 
   data.forEach(function (row) {
     if (extent.length == 0) extent[0] = row.timestamp;
     extent[1] = row.timestamp;
+    // assume the data's all in the same zone
+    timezone = row.timezone;
 
     var day_of_week = parseInt(row.day_of_week),
         hour = parseInt(row.hour);
@@ -78,7 +81,7 @@ d3.csv("data.csv", function (data) {
 
   var from = datefmt(new Date(1000 * extent[0])),
       to = datefmt(new Date(1000 * extent[1]));
-  d3.select("#from-to").text(" from " + from + " to " + to);
+  d3.select("#from-to").text(" from " + from + " to " + to + " (" + timezone + ")");
 
   table.selectAll("tr.data").data(days).enter().append("tr").attr("class", "data");
 
