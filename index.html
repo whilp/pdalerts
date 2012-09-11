@@ -33,7 +33,8 @@
 <script src="http://d3js.org/d3.v2.js"></script>
 <script src="https://raw.github.com/mbostock/d3/master/lib/colorbrewer/colorbrewer.js"></script>
 <script>
-var days = [];
+var days = [],
+    day_names = ["SU", "MO", "TU", "WE", "TH", "FR", "SA"];
 
 for (var i=0; i<7; i++) {
   days[i] = [];
@@ -45,11 +46,10 @@ for (var i=0; i<7; i++) {
 var color = d3.scale.log()
               .domain([1, 50])
               .range(["#ccc", "#111"]),
-    table = d3.select("#chart").append("table");
-
-table.append("tr").attr("class", "header")
-    .selectAll("th").data(d3.range(0, 24)).enter()
-    .append("th").text(function (d) { return "" + d; });
+    table = d3.select("#chart").append("table"),
+    header = table.append("tr").attr("class", "header")
+              .selectAll("th").data(d3.range(-1, 24)).enter()
+              .append("th").text(function (d) { return "" + d; });
 
 d3.csv("data.csv", function (data) {
   data.forEach(function (row) {
@@ -61,7 +61,10 @@ d3.csv("data.csv", function (data) {
   table.selectAll("tr.data").data(days).enter().append("tr").attr("class", "data");
 
   table.selectAll("tr.data").each(function (d, i) {
-    d3.select(this).selectAll("td")
+    var row = d3.select(this);
+    row.insert("th").text(day_names[i]);
+
+    row.selectAll("td")
         .data(d).enter().append("td")
         .attr("style", function (d) { return "background: " + color(d) + ";"})
         .append("span").text(function (d) {return d; })
