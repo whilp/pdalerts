@@ -1,29 +1,47 @@
 <html>
 <head>
   <title>Pagerduty alerts</title>
+  <style>
+    * {
+      font-family: sans-serif;
+    }
+
+    table, tr, td {
+      padding: 0;
+    }
+
+    #chart table tr td {
+      display: block;
+      height: 30px;
+      width: 30px;
+    }
+
+    #chart table tr td span {
+      display: block;
+      text-align: center;
+      color: #fff;
+    }
+  </style>
 </head>
 
 <div id="chart"></div>
 
 <script src="http://d3js.org/d3.v2.js"></script>
+<script src="https://raw.github.com/mbostock/d3/master/lib/colorbrewer/colorbrewer.js"></script>
 <script>
-var days = {};
+var days = [];
 
 for (var i=0; i<7; i++) {
-  days[i] = {};
+  days[i] = [];
   for (var j=0; j<24; j++) {
     days[i][j] = 0;
   };
 };
 
-var svg = d3.select("#chart").selectAll("svg")
-    .data(d3.range(0, 7))
-  .enter().append("svg");
-
-var rect = svg.selectAll("rect.hour")
-    .data(d3.range(0, 24))
-  .enter().append("rect")
-    .attr("class", "hour");
+var color = d3.scale.log()
+              .domain([1, 50])
+              .range(["#ccc", "#111"]),
+    table = d3.select("#chart").append("table");
 
 d3.csv("data.csv", function (data) {
   data.forEach(function (row) {
@@ -32,6 +50,42 @@ d3.csv("data.csv", function (data) {
     days[day_of_week][hour] += 1;
   });
 
+  table.selectAll("tr").data(days).enter().append("tr");
+
+  table.selectAll("tr").each(function (d, i) {
+    d3.select(this).selectAll("td")
+        .data(d).enter().append("td")
+        .attr("style", function (d) { return "background: " + color(d) + ";"})
+        .append("span").text(function (d) {return d; })
+  });
+
 });
+
+    /*
+    rows = table.selectAll("tr")
+              .data(d3.range(0, 7)).enter().append("tr")
+            .each(function (d, i) {
+              console.log(d, i, this);
+              this.selectAll("td");
+            });
+            ).selecttAll("td")
+              .data(d3.range(0, 24)).enter().append("td");
+            */
+    
+/*
+d3.csv("data.csv", function (data) {
+  data.forEach(function (row) {
+    var day_of_week = parseInt(row.day_of_week),
+        hour = parseInt(row.hour);
+    days[day_of_week][hour] += 1;
+  });
+
+  rows.forEach(function (row, i) {
+    row.selectAll("td")
+      .data(days[i]).enter().append("td");
+  });
+
+});
+*/
 </script>
 </html>
