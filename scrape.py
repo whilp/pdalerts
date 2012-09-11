@@ -19,6 +19,9 @@ def main():
 
     out = csv.DictWriter(sys.stdout, ("timestamp", "type", "email"),
         extrasaction="ignore")
+
+    out.writeheader()
+
     for alert in alerts(since, until):
         alert.update(alert["user"])
         alert["timestamp"] = strptime(alert["started_at"]).strftime("%s")
