@@ -47,6 +47,10 @@ var color = d3.scale.log()
               .range(["#ccc", "#111"]),
     table = d3.select("#chart").append("table");
 
+table.append("tr").attr("class", "header")
+    .selectAll("th").data(d3.range(0, 24)).enter()
+    .append("th").text(function (d) { return "" + d; });
+
 d3.csv("data.csv", function (data) {
   data.forEach(function (row) {
     var day_of_week = parseInt(row.day_of_week),
@@ -54,9 +58,9 @@ d3.csv("data.csv", function (data) {
     days[day_of_week][hour] += 1;
   });
 
-  table.selectAll("tr").data(days).enter().append("tr");
+  table.selectAll("tr.data").data(days).enter().append("tr").attr("class", "data");
 
-  table.selectAll("tr").each(function (d, i) {
+  table.selectAll("tr.data").each(function (d, i) {
     d3.select(this).selectAll("td")
         .data(d).enter().append("td")
         .attr("style", function (d) { return "background: " + color(d) + ";"})
