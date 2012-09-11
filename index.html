@@ -32,6 +32,12 @@
   </style>
 </head>
 
+<h1>Pagerduty alerts</h1>
+
+<p>
+This heatmap shows the frequency of Pagerduty alerts binned by hour <span id="from-to"></span>.
+</p>
+
 <div id="chart"></div>
 
 <script src="http://d3js.org/d3.v2.js"></script>
@@ -47,6 +53,7 @@ for (var i=0; i<7; i++) {
 };
 
 var format = d3.format(".1f"),
+    datefmt = d3.time.format("%Y-%m-%d"),
     color = d3.scale.log()
               .domain([0.02, 10])
               .range(["#ddd", "#333"]),
@@ -60,14 +67,18 @@ d3.csv("data.csv", function (data) {
       extent = [];
 
   data.forEach(function (row) {
-    if (extent.length == 0) extent[0] = row.utc_timestamp;
-    extent[1] = row.utc_timestamp;
+    if (extent.length == 0) extent[0] = row.timestamp;
+    extent[1] = row.timestamp;
 
     var day_of_week = parseInt(row.day_of_week),
         hour = parseInt(row.hour);
     days[day_of_week][hour] += 1;
   });
   span = (extent[1] - extent[0])/86400;
+
+  var from = datefmt(new Date(1000 * extent[0])),
+      to = datefmt(new Date(1000 * extent[1]));
+  d3.select("#from-to").text("from " + from + " to " + to);
 
   table.selectAll("tr.data").data(days).enter().append("tr").attr("class", "data");
 
