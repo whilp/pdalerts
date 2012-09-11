@@ -35,7 +35,7 @@
 <h1>Pagerduty alerts</h1>
 
 <p>
-This heatmap shows the frequency of Pagerduty alerts binned by hour <span id="from-to"></span>.
+This heatmap shows the frequency of Pagerduty alerts binned by hour<span id="from-to"></span>.
 </p>
 
 <div id="chart"></div>
@@ -78,7 +78,7 @@ d3.csv("data.csv", function (data) {
 
   var from = datefmt(new Date(1000 * extent[0])),
       to = datefmt(new Date(1000 * extent[1]));
-  d3.select("#from-to").text("from " + from + " to " + to);
+  d3.select("#from-to").text(" from " + from + " to " + to);
 
   table.selectAll("tr.data").data(days).enter().append("tr").attr("class", "data");
 
