@@ -6,25 +6,37 @@ import datetime
 import os
 import sys
 
+import pytz
 import requests
 
 subdomain = os.getenv("PAGERDUTY_SUBDOMAIN")   
 user = os.getenv("PAGERDUTY_USER")
 password = os.getenv("PAGERDUTY_PASS")
 auth = (user, password)
+timezone = pytz.timezone(os.getenv("TZ", "UTC"))
 API = "https://simple.pagerduty.com/api/v1"
 
 def main():
     since, until = sys.argv[1:]
 
-    out = csv.DictWriter(sys.stdout, ("timestamp", "type", "email"),
+    out = csv.DictWriter(sys.stdout, (
+            "timestamp", "timezone", "utc_timestamp", "hour", "week",
+            "month", "day_of_week", "type", "email"),
         extrasaction="ignore")
 
     out.writeheader()
 
     for alert in alerts(since, until):
         alert.update(alert["user"])
-        alert["timestamp"] = strptime(alert["started_at"]).strftime("%s")
+        utc_dt = strptime(alert["started_at"])
+        dt = timezone.localize(utc_dt)
+        alert["timezone"] = timezone.zone
+        alert["utc_timestamp"] = utc_dt.strftime("%s")
+        alert["timestamp"] = dt.strftime("%s")
+        alert["day_of_week"] = dt.strftime("%w")
+        alert["week"] = dt.strftime("%U")
+        alert["month"] = dt.strftime("%m")
+        alert["hour"] = dt.strftime("%H")
         out.writerow(alert)
 
 def alerts(since, until):
