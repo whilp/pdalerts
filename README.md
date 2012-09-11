@@ -9,4 +9,4 @@ Tools to visualize your pagerduty alert activity.
         export PAGERDUTY_PASS=yourpassword
 
         pip install -r requirements.txt
-        python ./scrape.py 2012-09-01 2012-09-10 > data.csv
+        TZ=America/Chicago python ./scrape.py 2012-09-01 2012-09-10 > data.csv
