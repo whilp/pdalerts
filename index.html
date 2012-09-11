@@ -71,32 +71,5 @@ d3.csv("data.csv", function (data) {
   });
 
 });
-
-    /*
-    rows = table.selectAll("tr")
-              .data(d3.range(0, 7)).enter().append("tr")
-            .each(function (d, i) {
-              console.log(d, i, this);
-              this.selectAll("td");
-            });
-            ).selecttAll("td")
-              .data(d3.range(0, 24)).enter().append("td");
-            */
-    
-/*
-d3.csv("data.csv", function (data) {
-  data.forEach(function (row) {
-    var day_of_week = parseInt(row.day_of_week),
-        hour = parseInt(row.hour);
-    days[day_of_week][hour] += 1;
-  });
-
-  rows.forEach(function (row, i) {
-    row.selectAll("td")
-      .data(days[i]).enter().append("td");
-  });
-
-});
-*/
 </script>
 </html>
