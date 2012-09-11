@@ -10,6 +10,10 @@
       padding: 0;
     }
 
+    #chart table tr.header th:first-child span {
+      display: none;
+    }
+
     #chart table tr td {
       display: block;
       height: 30px;
@@ -49,7 +53,7 @@ var color = d3.scale.log()
     table = d3.select("#chart").append("table"),
     header = table.append("tr").attr("class", "header")
               .selectAll("th").data(d3.range(-1, 24)).enter()
-              .append("th").text(function (d) { return "" + d; });
+              .append("th").append("span").text(function (d) { return "" + d; });
 
 d3.csv("data.csv", function (data) {
   data.forEach(function (row) {
@@ -62,7 +66,7 @@ d3.csv("data.csv", function (data) {
 
   table.selectAll("tr.data").each(function (d, i) {
     var row = d3.select(this);
-    row.insert("th").text(day_names[i]);
+    row.insert("th").append("span").text(day_names[i]);
 
     row.selectAll("td")
         .data(d).enter().append("td")
