@@ -1,0 +1,37 @@
+<html>
+<head>
+  <title>Pagerduty alerts</title>
+</head>
+
+<div id="chart"></div>
+
+<script src="http://d3js.org/d3.v2.js"></script>
+<script>
+var days = {};
+
+for (var i=0; i<7; i++) {
+  days[i] = {};
+  for (var j=0; j<24; j++) {
+    days[i][j] = 0;
+  };
+};
+
+var svg = d3.select("#chart").selectAll("svg")
+    .data(d3.range(0, 7))
+  .enter().append("svg");
+
+var rect = svg.selectAll("rect.hour")
+    .data(d3.range(0, 24))
+  .enter().append("rect")
+    .attr("class", "hour");
+
+d3.csv("data.csv", function (data) {
+  data.forEach(function (row) {
+    var day_of_week = parseInt(row.day_of_week),
+        hour = parseInt(row.hour);
+    days[day_of_week][hour] += 1;
+  });
+
+});
+</script>
+</html>
