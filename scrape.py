@@ -5,6 +5,7 @@ import csv
 import datetime
 import os
 import sys
+import logging
 
 import pytz
 import requests
@@ -15,9 +16,15 @@ password = os.getenv("PAGERDUTY_PASS")
 auth = (user, password)
 timezone = pytz.timezone(os.getenv("TZ", "UTC"))
 API = "https://simple.pagerduty.com/api/v1"
+log = logging.getLogger()
 
 def main():
-    since, until = sys.argv[1:]
+    log.addHandler(logging.StreamHandler())
+    log.level = logging.DEBUG
+
+    since, until = sys.argv[1:3]
+
+    emails = sys.argv[3:]
 
     out = csv.DictWriter(sys.stdout, (
             "timestamp", "timezone", "utc_timestamp", "hour", "week",
@@ -37,8 +44,10 @@ def main():
         alert["week"] = dt.strftime("%U")
         alert["month"] = dt.strftime("%m")
         alert["hour"] = dt.strftime("%H")
-        out.writerow(alert)
+        if not emails or alert["email"] in emails:
+            out.writerow(alert)
 
+               
 def alerts(since, until):
     global auth
     params={"since": since, "until": until, "offset": 0}
@@ -46,7 +55,8 @@ def alerts(since, until):
     data = True
     while data:
         result = requests.get(API + "/alerts", auth=auth, params=params)
-        data = result.json.get("alerts", [])
+        
+        data = result.json().get("alerts", [])
         for alert in data:
             yield alert
         params["offset"] += len(data)
