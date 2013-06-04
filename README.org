@@ -4,14 +4,37 @@ Tools to visualize your pagerduty alert activity.
 
 ** Get your data
 
+First, install some dependencies in a virtualenv (or using your preferred method).
+
+#+BEGIN_SRC
+virtualenv .
+./bin/pip install -r requirements.txt
+#+END_SRC
+
+Then, set some environment variables with your pagerduty API, credentials, and preferred timezone.
+
 #+BEGIN_SRC
 export PAGERDUTY_SUBDOMAIN=example
 export PAGERDUTY_USER=you@example.com
 export PAGERDUTY_PASS=yourpassword
+export TZ=America/Chicago
+#+END_SRC
 
-virtualenv .
-./bin/pip install -r requirements.txt
-TZ=America/Chicago ./bin/python ./scrape.py 2012-09-01 2012-09-10 > data.csv
+=scrape.py= takes a two or more arguments. The first two define the date range you're interested in (note that the pagerduty API only supports requests for ranges less than 30 days).
+
+#+BEGIN_SRC
+./bin/python ./scrape.py 2012-09-01 2012-09-10 > data.csv
+#+END_SRC
+
+Any subsequent arguments will act as a filter, limiting the output to only rows with a user email in the list.
+
+#+BEGIN_SRC
+./bin/python ./scrape.py 2012-09-01 2012-09-10 alice@example.com bob@example.com > data.csv
+#+END_SRC
+
+You can now serve the data file and other static assets locally (or deploy them to a web server):
+
+#+BEGIN_SRC
 ./bin/python -mSimpleHTTPServer
 open http://localhost:8000/
 #+END_SRC
