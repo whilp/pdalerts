@@ -12,4 +12,6 @@ export PAGERDUTY_PASS=yourpassword
 virtualenv .
 ./bin/pip install -r requirements.txt
 TZ=America/Chicago ./bin/python ./scrape.py 2012-09-01 2012-09-10 > data.csv
+./bin/python -mSimpleHTTPServer
+open http://localhost:8000/
 #+END_SRC
