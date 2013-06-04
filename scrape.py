@@ -24,7 +24,6 @@ def main():
     API = "https://%s.pagerduty.com/api/v1" % subdomain
 
     since, until = sys.argv[1:3]
-
     emails = sys.argv[3:]
 
     out = csv.DictWriter(sys.stdout, (
@@ -47,7 +46,6 @@ def main():
         alert["hour"] = dt.strftime("%H")
         if not emails or alert["email"] in emails:
             out.writerow(alert)
-
                
 def alerts(since, until):
     global auth
