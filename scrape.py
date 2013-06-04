@@ -15,12 +15,13 @@ user = os.getenv("PAGERDUTY_USER")
 password = os.getenv("PAGERDUTY_PASS")
 auth = (user, password)
 timezone = pytz.timezone(os.getenv("TZ", "UTC"))
-API = "https://simple.pagerduty.com/api/v1"
 log = logging.getLogger()
 
 def main():
     log.addHandler(logging.StreamHandler())
     log.level = logging.DEBUG
+
+    API = "https://%s.pagerduty.com/api/v1" % subdomain
 
     since, until = sys.argv[1:3]
 
