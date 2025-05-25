@@ -44,10 +44,10 @@ This heatmap shows the frequency of Pagerduty alerts binned by hour<span id="fro
 Generated using <a href="https://github.com/whilp/pdalerts">this stuff</a>.
 </p>
 
-<script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
 var days = [],
-    day_names = ["SU", "MO", "TU", "WE", "TH", "FR", "SA"];
+    day_names = ["MO", "TU", "WE", "TH", "FR", "SA", "SU"];
 
 for (var i=0; i<7; i++) {
   days[i] = [];
@@ -57,16 +57,20 @@ for (var i=0; i<7; i++) {
 };
 
 var format = d3.format(".1f"),
-    datefmt = d3.time.format("%Y-%m-%d"),
-    color = d3.scale.log()
+    datefmt = d3.timeFormat("%Y-%m-%d"),
+    color = d3.scaleLog()
               .domain([0.02, 10])
               .range(["#ddd", "#333"]),
     table = d3.select("#chart").append("table"),
-    header = table.append("tr").attr("class", "header")
-              .selectAll("th").data(d3.range(-1, 24)).enter()
-              .append("th").append("span").text(function (d) { return "" + d; });
+    header = table.append("tr").attr("class", "header");
 
-d3.csv("data.csv", function (data) {
+  header.selectAll("th")
+    .data(d3.range(-1, 24))
+    .join("th")
+    .append("span")
+    .text(function (d) { return "" + d; });
+
+d3.csv("data.csv").then(function (data) {
   var span,
       timezone,
       extent = [];
@@ -79,7 +83,8 @@ d3.csv("data.csv", function (data) {
 
     var day_of_week = parseInt(row.day_of_week),
         hour = parseInt(row.hour);
-    days[day_of_week][hour] += 1;
+    var mapped_day_of_week = (day_of_week === 0) ? 6 : day_of_week - 1;
+    days[mapped_day_of_week][hour] += 1;
   });
   span = (extent[1] - extent[0])/86400;
 
@@ -87,19 +92,24 @@ d3.csv("data.csv", function (data) {
       to = datefmt(new Date(1000 * extent[1]));
   d3.select("#from-to").text(" from " + from + " to " + to + " (" + timezone + ")");
 
-  table.selectAll("tr.data").data(days).enter().append("tr").attr("class", "data");
-
-  table.selectAll("tr.data").each(function (d, i) {
-    var row = d3.select(this);
+  table.selectAll("tr.data")
+    .data(days)
+    .join("tr")
+    .attr("class", "data")
+    .each(function (d, i) {
+      var row = d3.select(this);
     row.insert("th").append("span").text(day_names[i]);
 
     row.selectAll("td")
-        .data(d).enter().append("td")
-        .datum(function (d) { return d/span; })
-        .attr("style", function (d) { return "background: " + color(d) + ";"})
-        .append("span").text(format);
+      .data(d)
+      .join("td")
+      .datum(function (d) { return d/span; })
+      .attr("style", function (d) { return "background: " + color(d) + ";"})
+      .append("span").text(format);
   });
 
+}).catch(function(error) {
+  console.error('Error loading or processing data:', error);
 });
 </script>
 </html>
